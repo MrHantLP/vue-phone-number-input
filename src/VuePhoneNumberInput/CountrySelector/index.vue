@@ -95,6 +95,7 @@
             ]"
             tabindex="-1"
             type="button"
+            @mousedown.prevent="() => {}"
             @click.stop="updateValue(item.iso2)"
           >
             <div
