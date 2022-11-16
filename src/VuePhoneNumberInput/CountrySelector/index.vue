@@ -27,7 +27,7 @@
     <input
       :id="id"
       ref="CountrySelector"
-      :value="callingCode"
+      :value="inputValue"
       :placeholder="label"
       :disabled="disabled"
       class="country-selector__input"
@@ -35,6 +35,7 @@
       @focus="isFocus = true"
       @click.stop="toggleList"
       @keypress="NumbersOnly"
+      @input="input"
     >
     <div
       class="country-selector__toggle"
@@ -155,6 +156,7 @@
         selectedIndex: null,
         tmpValue: this.value,
         query: '',
+        inputValue: '',
         indexItemToShow: 0,
         isHover: false,
       }
@@ -171,8 +173,11 @@
           maxHeight: `${(this.countriesHeight + 1) * 7}px`
         }
       },
+      newValue(){
+        return this.inputValue
+      },
       countriesList () {
-        const callingCode = this.callingCode.replace('+', '')
+        const callingCode = this.newValue.replace('+', '')
         return (!this.enableCodeSearch) ? this.items.filter(item => !this.ignoredCountries.includes(item.iso2)) : this.items.filter(item => item.dialCode.includes(callingCode))
       },
       countriesFiltered () {
@@ -186,7 +191,6 @@
         return this.countriesList.filter(item => !this.preferredCountries.includes(item.iso2))
       },
       countriesSorted () {
-        console.log(this.countriesList)
         return this.preferredCountries
           ? [ ...this.countriesFiltered,
               ...this.otherCountries ]
@@ -203,9 +207,11 @@
         return this.countriesSorted.findIndex(c => c.iso2 === this.tmpValue)
       },
       callingCode () {
-        console.log(this.value)
         return this.value ? `+${getCountryCallingCode(this.value)}` : null
       }
+    },
+    mounted(){
+      this.inputValue = this.callingCode
     },
     methods: {
       updateHoverState(value) {
@@ -218,6 +224,9 @@
       },
       toggleList () {
         this.$refs.countriesList.offsetParent ? this.closeList() : this.openList()
+      },
+      input(e){
+        this.inputValue = e.target.value
       },
       NumbersOnly (evt) {
         evt = (evt) ? evt : window.event

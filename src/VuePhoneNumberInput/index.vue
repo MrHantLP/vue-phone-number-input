@@ -138,6 +138,7 @@
         }
       },
       codesCountries () {
+        console.log(countries)
         return countries
       },
       countryCode: {
@@ -145,6 +146,7 @@
           return this.userLocale || this.results.countryCode
         },
         set (newCountry) {
+          console.log(newCountry)
           this.setLocale(newCountry)
           this.$refs.PhoneNumberInput.$el.querySelector('input').focus()
         }
