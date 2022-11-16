@@ -31,11 +31,10 @@
       :placeholder="label"
       :disabled="disabled"
       class="country-selector__input"
-      readonly
       :style="[radiusLeftStyle, inputBorderStyle, inputBoxShadowStyle, inputBgColor]"
       @focus="isFocus = true"
-      @keydown="keyboardNav"
       @click.stop="toggleList"
+      @keypress="NumbersOnly"
     >
     <div
       class="country-selector__toggle"
@@ -146,7 +145,8 @@
       ignoredCountries: { type: Array, default: null },
       noFlags: { type: Boolean, default: false },
       countriesHeight: { type: Number, default: 35 },
-      showCodeOnList: { type: Boolean, default: false }
+      showCodeOnList: { type: Boolean, default: false },
+      enableCodeSearch: { type: Boolean, default: false },
     },
     data () {
       return {
@@ -156,7 +156,7 @@
         tmpValue: this.value,
         query: '',
         indexItemToShow: 0,
-        isHover: false
+        isHover: false,
       }
     },
     computed: {
@@ -172,16 +172,21 @@
         }
       },
       countriesList () {
-        return this.items.filter(item => !this.ignoredCountries.includes(item.iso2))
+        const callingCode = this.callingCode.replace('+', '')
+        return (!this.enableCodeSearch) ? this.items.filter(item => !this.ignoredCountries.includes(item.iso2)) : this.items.filter(item => item.dialCode.includes(callingCode))
       },
       countriesFiltered () {
         const countries = this.onlyCountries || this.preferredCountries
         return countries.map(country => this.countriesList.find(item => item.iso2.includes(country)))
       },
+      countriesSearched (value) {
+        return this.items.filter(item => item.iso2.includes(value))
+      },
       otherCountries () {
         return this.countriesList.filter(item => !this.preferredCountries.includes(item.iso2))
       },
       countriesSorted () {
+        console.log(this.countriesList)
         return this.preferredCountries
           ? [ ...this.countriesFiltered,
               ...this.otherCountries ]
@@ -198,6 +203,7 @@
         return this.countriesSorted.findIndex(c => c.iso2 === this.tmpValue)
       },
       callingCode () {
+        console.log(this.value)
         return this.value ? `+${getCountryCallingCode(this.value)}` : null
       }
     },
@@ -212,6 +218,15 @@
       },
       toggleList () {
         this.$refs.countriesList.offsetParent ? this.closeList() : this.openList()
+      },
+      NumbersOnly (evt) {
+        evt = (evt) ? evt : window.event
+        const charCode = (evt.which) ? evt.which : evt.keyCode
+        if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46 && charCode !== 43) {
+          evt.preventDefault()
+        } else {
+          return true
+        }
       },
       openList () {
         if (!this.disabled) {

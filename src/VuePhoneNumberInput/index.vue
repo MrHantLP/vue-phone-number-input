@@ -27,6 +27,7 @@
         :size="size"
         :dark="dark"
         :theme="theme"
+        :enable-code-search="enableCodeSearch"
         class="input-country-selector"
       >
         <slot
@@ -116,7 +117,8 @@
       noCountrySelector: { type: Boolean, default: false },
       showCodeOnList: { type: Boolean, default: false },
       dark: { type: Boolean, default: false },
-      borderRadius: { type: Number, default: 4 }
+      borderRadius: { type: Number, default: 4 },
+      enableCodeSearch: { type: Boolean, default: false },
     },
     data () {
       return {
