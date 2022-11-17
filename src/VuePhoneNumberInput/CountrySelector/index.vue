@@ -135,12 +135,13 @@
               :key="`item-${item.code}`"
               :class="[
                 { 'selected': value === item.iso2 },
-                { 'keyboard-selected': value !== item.iso2 && tmpValue === item.iso2 }
+                { 'keyboard-selected': value !== item.iso2 && tmpValue === item.iso2 },
+                { 'similar-item': foundValuesBacklog.length === 1 && foundValuesBacklog[0].iso2 === item.iso2 }
               ]"
               class="flex align-center country-selector__list__item"
               :style="[
                 itemHeight,
-                value === item.iso2 ? bgItemSelectedStyle : null
+                value === item.iso2 ? bgItemSelectedStyle : null,
               ]"
               tabindex="-1"
               type="button"
@@ -225,19 +226,22 @@
           maxHeight: `${(this.countriesHeight + 1) * 7}px`
         }
       },
-      newValue(){
-        return this.inputValue
-      },
       countriesList () {
-        const callingCode = this.newValue.replace('+', '')
-        return (!this.enableCodeSearch) ? this.items.filter(item => !this.ignoredCountries.includes(item.iso2)) : this.items.filter(item => item.dialCode.includes(callingCode))
+        if (!this.enableCodeSearch){
+          return this.items.filter(item => !this.ignoredCountries.includes(item.iso2))
+        } else {
+          const newItems = this.items
+          const phoneCode = this.inputValue.replace('+','')
+          return newItems.sort((first, second) => this.sort(first, second, phoneCode))
+        }
+      },
+      foundValuesBacklog(){
+        const phoneCode = this.inputValue.replace('+','')
+        return this.items.filter(el => el.dialCode === phoneCode)
       },
       countriesFiltered () {
         const countries = this.onlyCountries || this.preferredCountries
         return countries.map(country => this.countriesList.find(item => item.iso2.includes(country)))
-      },
-      countriesSearched (value) {
-        return this.items.filter(item => item.iso2.includes(value))
       },
       otherCountries () {
         return this.countriesList.filter(item => !this.preferredCountries.includes(item.iso2))
@@ -267,6 +271,13 @@
       this.inputValue = this.value ? `+${getCountryCallingCode(this.value)}` : this.locale? `+${getCountryCallingCode(this.locale)}` : '+'
     },
     methods: {
+      sort(first, second, code){
+        if (first.dialCode.startsWith(code) && second.dialCode.startsWith(code)) return first.dialCode.localeCompare(second.dialCode)
+        else if (first.dialCode.startsWith(code)) return -1
+        else if (second.dialCode.startsWith(code)) return 1
+
+        return first.dialCode.localeCompare(second.dialCode)
+      },
       updateHoverState(value) {
         this.isHover = value
       },
@@ -300,7 +311,7 @@
         }
       },
       closeList () {
-        if (this.countriesSorted.length === 1){
+        if (this.foundValuesBacklog.length === 1){
           this.$emit('input', this.countriesSorted[0].iso2 || null)
         }
         this.$emit('close')
@@ -507,6 +518,9 @@
         &.hover,
         &.keyboard-selected {
           background-color: $hover-color;
+        }
+        &.similar-item {
+          background-color: $similar-color;
         }
 
         &.selected {
