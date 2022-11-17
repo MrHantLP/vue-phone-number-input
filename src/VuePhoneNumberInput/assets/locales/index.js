@@ -2,5 +2,6 @@ export default {
   countrySelectorLabel: 'Country code',
   countrySelectorError: 'Choose country',
   phoneNumberLabel: 'Phone number',
-  example: 'Example:'
+  example: 'Example:',
+  notFound: 'Nothing found'
 }

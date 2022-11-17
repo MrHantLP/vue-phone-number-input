@@ -27,6 +27,8 @@
         :size="size"
         :dark="dark"
         :theme="theme"
+        :enable-code-search="enableCodeSearch"
+        :not-found-placeholder="t.notFound"
         class="input-country-selector"
       >
         <slot
@@ -95,6 +97,7 @@
       value: { type: String, default: null },
       id: { type: String, default: 'MazPhoneNumberInput' },
       color: { type: String, default: 'dodgerblue' },
+      selectedColor: { type: String, default: '#8fc7ff' },
       validColor: { type: String, default: 'yellowgreen' },
       errorColor: { type: String, default: 'orangered' },
       darkColor: { type: String, default: '#424242' },
@@ -116,7 +119,8 @@
       noCountrySelector: { type: Boolean, default: false },
       showCodeOnList: { type: Boolean, default: false },
       dark: { type: Boolean, default: false },
-      borderRadius: { type: Number, default: 4 }
+      borderRadius: { type: Number, default: 4 },
+      enableCodeSearch: { type: Boolean, default: false },
     },
     data () {
       return {
@@ -189,6 +193,7 @@
           bgValidColor: { backgroundColor: this.validColor },
           bgErrorColor: { backgroundColor: this.errorColor },
           bgDarkColor: { backgroundColor: this.darkColor },
+          similarColor: { backgroundColor: this.selectedColor },
           borderColor: { borderColor: this.color },
           borderValidColor: { borderColor: this.validColor },
           borderErrorColor: { borderColor: this.errorColor },
@@ -223,7 +228,7 @@
         immediate: true
       }
     },
-    async mounted () {
+    async created () {
       try {
         if (this.phoneNumber && this.defaultCountryCode) this.emitValues({countryCode: this.defaultCountryCode, phoneNumber: this.phoneNumber})
 
@@ -238,7 +243,7 @@
         if (this.defaultCountryCode) return
 
         this.fetchCountry
-          ? this.fetchCountryCode()
+          ? await this.fetchCountryCode()
           : !this.noUseBrowserLocale
             ? this.setLocale(browserLocale())
             : null
