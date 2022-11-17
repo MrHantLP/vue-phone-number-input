@@ -140,7 +140,6 @@
         }
       },
       codesCountries () {
-        console.log(countries)
         return countries
       },
       countryCode: {
@@ -148,7 +147,6 @@
           return this.userLocale || this.results.countryCode
         },
         set (newCountry) {
-          console.log(newCountry)
           this.setLocale(newCountry)
           this.$refs.PhoneNumberInput.$el.querySelector('input').focus()
         }
@@ -314,7 +312,6 @@
           const response  = await fetch('https://ip2c.org/s')
           const responseText = await response.text()
           const result = (responseText || '').toString()
-          console.log(result)
           if (result && result[0] === '1') this.setLocale(result.substr(2, 2))
         } catch (err) {
           throw new Error(err)
