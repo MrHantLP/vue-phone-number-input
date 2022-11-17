@@ -28,6 +28,7 @@
         :dark="dark"
         :theme="theme"
         :enable-code-search="enableCodeSearch"
+        :not-found-placeholder="t.notFound"
         class="input-country-selector"
       >
         <slot
@@ -227,7 +228,7 @@
         immediate: true
       }
     },
-    async mounted () {
+    async created () {
       try {
         if (this.phoneNumber && this.defaultCountryCode) this.emitValues({countryCode: this.defaultCountryCode, phoneNumber: this.phoneNumber})
 
@@ -242,7 +243,7 @@
         if (this.defaultCountryCode) return
 
         this.fetchCountry
-          ? this.fetchCountryCode()
+          ? await this.fetchCountryCode()
           : !this.noUseBrowserLocale
             ? this.setLocale(browserLocale())
             : null
@@ -311,6 +312,7 @@
           const response  = await fetch('https://ip2c.org/s')
           const responseText = await response.text()
           const result = (responseText || '').toString()
+          console.log(result)
           if (result && result[0] === '1') this.setLocale(result.substr(2, 2))
         } catch (err) {
           throw new Error(err)
