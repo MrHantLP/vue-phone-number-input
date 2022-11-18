@@ -313,6 +313,8 @@
       closeList () {
         if (this.foundValuesBacklog.length === 1){
           this.$emit('input', this.countriesSorted[0].iso2 || null)
+        } else {
+          this.inputValue = '+' + getCountryCallingCode(this.value)
         }
         this.$emit('close')
         this.hasListOpen = false

@@ -6,21 +6,20 @@
     <h1 class="text-center py-3">
       VuePhoneNumberInput
     </h1>
-    <div class="component mb-2 w-2/3">
-      <VuePhoneNumberInput
-        id="phoneNumber1"
-        v-model="phoneNumber"
-        color="#00CBFF"
-        valid-color="#00CBFF"
-        fetch-country
-        no-flags
-        show-code-on-list
-        class="mb-2"
-        enable-code-search
-        @update="onUpdate"
-      />
-      <b>v-model</b> : {{ phoneNumber }}
-    </div>
+    <VuePhoneNumberInput
+      v-model="phoneNumber"
+      :color="vBlueColor"
+      :valid-color="vBlueColor"
+      :selected-color="vBlueColor"
+      :border-radius='8'
+      class="phone-input"
+      fetch-country
+      no-flags
+      show-code-on-list
+      enable-code-search
+      :translations="translations"
+      @update="onUpdate3"
+    />
   </div>
 </template>
 
@@ -50,9 +49,12 @@
         results2: {},
         results3: {},
         dark: false,
+        phone: '',
         disabled: false,
         hasLoaderActive: false,
-        hasErrorActive: false
+        hasErrorActive: false,
+        isValid: false,
+        vBlueColor: '#00CBFF'
       }
     },
     computed: {
