@@ -212,6 +212,7 @@
         locale: '',
         indexItemToShow: 0,
         isHover: false,
+        updatedByClick: false,
       }
     },
     computed: {
@@ -291,6 +292,7 @@
       },
       input(e){
         this.inputValue = e.target.value
+        this.scrollToSelectedOnFocus(0)
       },
       NumbersOnly (evt) {
         evt = (evt) ? evt : window.event
@@ -311,20 +313,22 @@
         }
       },
       closeList () {
-        if (this.foundValuesBacklog.length === 1){
-          this.$emit('input', this.countriesSorted[0].iso2 || null)
+        if (this.foundValuesBacklog.length >= 1){
+          if (!this.updatedByClick) {
+            this.$emit('input', this.countriesSorted[0].iso2 || null)
+          }
+          this.updatedByClick = false
         } else {
           this.inputValue = '+' + getCountryCallingCode(this.value)
         }
         this.$emit('close')
         this.hasListOpen = false
       },
-      async updateValue (val, code) {
+      updateValue (val, code) {
+        this.updatedByClick = true
         this.inputValue = '+' + code
         this.tmpValue = val
         this.$emit('input', val || null)
-        await this.$nextTick()
-        this.closeList()
       },
       scrollToSelectedOnFocus (arrayIndex) {
         this.$nextTick(() => {
